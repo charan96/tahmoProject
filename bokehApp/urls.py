@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
-	url(r'^countyMap/(?P<county>[A-Z][a-z]+)', views.countySelect, name='countySelect'),
+	url(r'^countyMap/(?P<county>[A-Za-z]+)', views.countySelect, name='countySelect'),
 ]
