@@ -17,6 +17,7 @@ def makeCodesDict():
 			codesDict[row['cnty']].append(row['stid'])
 		else:
 			codesDict[row['cnty']] = [row['stid'], ]
+
 	return codesDict
 
 
@@ -58,4 +59,13 @@ def countyDataFromBokehSampledata(*args):
 	else:
 		return None, None, None, None, None
 
-	# return countyNames, listOfStnsInEachCounty, countyX, countyY, codesDict
+
+def getCountyWeatherData(station):
+	datafile = 'bokehApp/data/' + station + 'County2009.csv'
+
+	pdReader = pd.read_csv(datafile)
+	pdReader = pdReader[
+		['STID', 'Date', 'Year', 'Month', 'Day', 'Time', 'RELH', 'TAIR', 'WSPD', 'WVEC', 'WDIR', 'WMAX', 'RAIN',
+		 'PRES', 'SRAD']]
+
+	return pdReader
