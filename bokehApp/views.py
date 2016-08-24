@@ -1,14 +1,12 @@
 from django.shortcuts import render
-from bokeh.models import HoverTool, Label
-from bokeh.plotting import figure, show, output_file, ColumnDataSource
+from bokeh.models import HoverTool, Label, OpenURL, TapTool
+from bokeh.plotting import figure, ColumnDataSource
 from bokeh.embed import components
-import helpers, random
+import helpers
 
 
 def index(request):
 	countyNames, countyCodes, countyX, countyY, codesDict = helpers.countyDataFromBokehSampledata()
-
-	stations = helpers.getStations()
 
 	source = ColumnDataSource(data=dict(
 		x=countyX,
@@ -17,7 +15,7 @@ def index(request):
 		countyCodes=countyCodes,
 	))
 
-	TOOLS = 'pan,reset,box_zoom,hover,save'
+	TOOLS = 'pan,tap,reset,box_zoom,hover,save'
 
 	p = figure(title="Oklahoma Counties", tools=TOOLS, plot_width=1000, plot_height=500,
 		     x_axis_location=None, y_axis_location=None)
@@ -30,8 +28,9 @@ def index(request):
 	p.ygrid.grid_line_color = None
 
 	# Marking Stations
-	for stnID, valList in stations.items():
-		p.circle(valList[3], valList[2], size=3, color="yellow")
+	# stations = helpers.getStations()
+	# for stnID, valList in stations.items():
+	# 	p.circle(valList[3], valList[2], size=3, color="yellow")
 
 	hover = p.select_one(HoverTool)
 	hover.point_policy = "follow_mouse"
@@ -39,6 +38,10 @@ def index(request):
 		('County', "@name"),
 		('Stations', "@countyCodes"),
 	]
+
+	url = 'countyMap/@name'
+	taptool = p.select(type=TapTool)
+	taptool.callback = OpenURL(url=url)
 
 	script, div = components(p)
 
@@ -57,7 +60,7 @@ def countySelect(request, county):
 	p.title.text_font = 'Bookman'
 	p.title.align = 'center'
 
-	p.patch(countyX, countyY, fill_color='blue', fill_alpha=0.7, line_width=0.5)
+	p.patch(countyX, countyY, fill_color='green', fill_alpha=0.7, line_width=0.5)
 	p.xgrid.grid_line_color = None
 	p.ygrid.grid_line_color = None
 
@@ -65,9 +68,9 @@ def countySelect(request, county):
 		if stnID in countyCodes:
 			p.circle(valList[3], valList[2], size=8, color="yellow")
 			p.add_layout(
-				Label(x=valList[3], y=valList[2], x_offset=10, text=stnID, render_mode='css',
+				Label(x=valList[3], y=valList[2], x_offset=10, y_offset=-5, text=stnID, render_mode='css',
 					background_fill_alpha=1.0, border_line_alpha=0, background_fill_color='black',
-					text_font='Bookman', text_color="#FB8072")
+					text_font='Bookman', text_color="white")
 			)
 
 	hover = p.select_one(HoverTool)
@@ -78,4 +81,4 @@ def countySelect(request, county):
 
 	script, div = components(p)
 
-	return render(request, 'bokehApp/countyMap.html', {"script": script, "div": div})
+	return render(request, 'bokehApp/countyMap.html', {"script": script, "div": div, "county": countyName})
