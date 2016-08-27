@@ -66,6 +66,7 @@ def getCountyWeatherData(station):
 	pdReader = pd.read_csv(datafile)
 	pdReader = pdReader[
 		['STID', 'Date', 'Year', 'Month', 'Day', 'Time', 'RELH', 'TAIR', 'WSPD', 'WVEC', 'WDIR', 'WMAX', 'RAIN',
-		 'PRES', 'SRAD']]
+		 'PRES', 'SRAD']
+	]
 
 	return pdReader
